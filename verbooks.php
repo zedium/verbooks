@@ -70,7 +70,8 @@ class VerBooksInit extends Singleton
              * Activation hooks
              */
             $this->application->onActivation(function () {
-                // Create tables or something else
+                $books = $this->application->get('Books');
+                $books->createBooksTable();
             });
 
             /**
@@ -85,9 +86,8 @@ class VerBooksInit extends Singleton
 
                 // load template
                 $this->application->template('plugin-template.php', ['foo' => 'bar']);
-                $books = $this->application->get('Books');
-                var_dump($books->createBooksTable());
-                die;
+
+
 
                 ///...
 
