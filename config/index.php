@@ -1,5 +1,5 @@
 <?php
-
+const VB_TEXT_DOMAIN = 'VERBOOKS_TEXT_DOMAIN';
 $config = [
     /**
      * Template config
