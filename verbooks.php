@@ -20,6 +20,9 @@ use Rabbit\Redirects\AdminNotice;
 use Rabbit\Templates\TemplatesServiceProvider;
 use Rabbit\Utils\Singleton;
 use League\Container\Container;
+use VerBooks\Classes\MenuPage;
+use VerBooks\Services;
+
 
 if (file_exists(dirname(__FILE__) . '/vendor/autoload.php')) {
     require dirname(__FILE__) . '/vendor/autoload.php';
@@ -57,7 +60,11 @@ class VerBooksInit extends Singleton
             $this->application->addServiceProvider(TemplatesServiceProvider::class);
             $this->application->addServiceProvider(LoggerServiceProvider::class);
             // Load your own service providers here...
-            $this->application->addServiceProvider(VerBooks\Pages\PagesManagerServiceProvider::class);
+            $this->application->addServiceProvider(Services\MenuServiceProvider::class);
+            $this->application->addServiceProvider(Services\BooksServiceProvider::class);
+
+
+
 
             /**
              * Activation hooks
@@ -78,6 +85,9 @@ class VerBooksInit extends Singleton
 
                 // load template
                 $this->application->template('plugin-template.php', ['foo' => 'bar']);
+                $books = $this->application->get('Books');
+                var_dump($books->createBooksTable());
+                die;
 
                 ///...
 
@@ -121,4 +131,4 @@ function verbooksInit()
     return VerBooksInit::get();
 }
 
-verbooksInit();
+$GLOBALS['verbooks'] = verbooksInit();
