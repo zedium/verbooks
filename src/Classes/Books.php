@@ -99,6 +99,7 @@ class Books
         add_action('add_meta_boxes', [$this, 'initMetaBoxes']);
         add_action('save_post', [$this, 'savePostAction']);
         add_action('init', [$this,'registerTaxonomies']);
+        add_action('before_delete_post', [$this,'delete_books_info_on_post_delete']);
     }
 
     public function createBooksTable(){
@@ -349,5 +350,18 @@ class Books
         register_taxonomy('author', array('book'), $author_args);
     }
 
+    function delete_books_info_on_post_delete($post_id) {
+
+        $post_type = get_post_type($post_id);
+        if ($post_type !== 'Book') {
+            return;
+        }
+
+
+        $table_name = $this->db->base_prefix . 'books_info';
+
+
+        $this->db->delete($table_name, ['post_id' => $post_id], ['%d']);
+    }
 
 }
