@@ -5,6 +5,8 @@ namespace VerBooks\Classes;
 class Books
 {
     private $table_name;
+
+
     private $posttype_name;
 
     private $ID;
@@ -12,7 +14,7 @@ class Books
     private $isbn;
 
     private $db;
-
+    private static $instance = null;
     /**
      * @return mixed
      */
@@ -61,17 +63,34 @@ class Books
         $this->isbn = $isbn;
     }
 
-
+    /**
+     * @return string
+     */
+    public function getTableName(): string
+    {
+        return $this->table_name;
+    }
 
     /**
      * @param $db
      */
-    public function __construct($db)
+    public function __construct($db=null)
     {
-        $this->db = $db;
+        global $wpdb;
+        $this->db = $db ?? $wpdb;
         $this->table_name = 'books_info';
         $this->posttype_name = 'Book';
         $this->registerActionsAndFilters();
+    }
+
+    public static function getInstance()
+    {
+
+        if ( !self::$instance ) {
+            self::$instance = new Books();
+        }
+        return self::$instance;
+
     }
 
     private function registerActionsAndFilters()
@@ -79,6 +98,7 @@ class Books
         add_action('init', [$this, 'registerPostType']);
         add_action('add_meta_boxes', [$this, 'initMetaBoxes']);
         add_action('save_post', [$this, 'savePostAction']);
+        add_action('init', [$this,'registerTaxonomies']);
     }
 
     public function createBooksTable(){
@@ -270,4 +290,64 @@ class Books
 
         $this->db->query($sql_query);
     }
+
+    function registerTaxonomies() {
+        // Labels for Publishers
+        $publisher_labels = array(
+            'name'              => _x('Publishers', 'taxonomy general name', VB_TEXT_DOMAIN),
+            'singular_name'     => _x('Publisher', 'taxonomy singular name', VB_TEXT_DOMAIN),
+            'search_items'      => __('Search Publishers', VB_TEXT_DOMAIN),
+            'all_items'         => __('All Publishers', VB_TEXT_DOMAIN),
+            'parent_item'       => __('Parent Publisher', VB_TEXT_DOMAIN),
+            'parent_item_colon' => __('Parent Publisher:', VB_TEXT_DOMAIN),
+            'edit_item'         => __('Edit Publisher', VB_TEXT_DOMAIN),
+            'update_item'       => __('Update Publisher', VB_TEXT_DOMAIN),
+            'add_new_item'      => __('Add New Publisher', VB_TEXT_DOMAIN),
+            'new_item_name'     => __('New Publisher Name', VB_TEXT_DOMAIN),
+            'menu_name'         => __('Publishers', VB_TEXT_DOMAIN),
+        );
+
+        // Args for Publishers
+        $publisher_args = array(
+            'hierarchical'      => true, // شبیه دسته‌بندی
+            'labels'            => $publisher_labels,
+            'show_ui'           => true,
+            'show_admin_column' => true,
+            'query_var'         => true,
+            'rewrite'           => array('slug' => 'publisher'),
+        );
+
+        // Register Publisher Taxonomy
+        register_taxonomy('publisher', array('book'), $publisher_args);
+
+        // Labels for Authors
+        $author_labels = array(
+            'name'              => _x('Authors', 'taxonomy general name', VB_TEXT_DOMAIN),
+            'singular_name'     => _x('Author', 'taxonomy singular name', VB_TEXT_DOMAIN),
+            'search_items'      => __('Search Authors', VB_TEXT_DOMAIN),
+            'all_items'         => __('All Authors', VB_TEXT_DOMAIN),
+            'parent_item'       => __('Parent Author', VB_TEXT_DOMAIN),
+            'parent_item_colon' => __('Parent Author:', VB_TEXT_DOMAIN),
+            'edit_item'         => __('Edit Author', VB_TEXT_DOMAIN),
+            'update_item'       => __('Update Author', VB_TEXT_DOMAIN),
+            'add_new_item'      => __('Add New Author', VB_TEXT_DOMAIN),
+            'new_item_name'     => __('New Author Name', VB_TEXT_DOMAIN),
+            'menu_name'         => __('Authors', VB_TEXT_DOMAIN),
+        );
+
+        // Args for Authors
+        $author_args = array(
+            'hierarchical'      => false, // شبیه برچسب‌ها
+            'labels'            => $author_labels,
+            'show_ui'           => true,
+            'show_admin_column' => true,
+            'query_var'         => true,
+            'rewrite'           => array('slug' => 'author'),
+        );
+
+        // Register Author Taxonomy
+        register_taxonomy('author', array('book'), $author_args);
+    }
+
+
 }
