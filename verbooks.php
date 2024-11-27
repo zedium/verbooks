@@ -62,6 +62,7 @@ class VerBooksInit extends Singleton
             // Load your own service providers here...
             $this->application->addServiceProvider(Services\MenuServiceProvider::class);
             $this->application->addServiceProvider(Services\BooksServiceProvider::class);
+            $this->application->addServiceProvider(Services\DataTableServiceProvider::class);
 
 
 
