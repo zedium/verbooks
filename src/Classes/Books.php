@@ -100,6 +100,16 @@ class Books
         add_action('save_post', [$this, 'savePostAction']);
         add_action('init', [$this,'registerTaxonomies']);
         add_action('before_delete_post', [$this,'delete_books_info_on_post_delete']);
+
+        add_action('admin_notices', function(){
+            if( 1 == get_transient('ISBN_NOTICE')){
+                echo '<div class="notice notice-error is-dismissible">
+                            <p><strong>' . __('Invalid ISBN format', VB_TEXT_DOMAIN) .'</p>
+                      </div>';
+                delete_transient('ISBN_NOTICE');
+            }
+        });
+
     }
 
     public function createBooksTable(){
@@ -267,6 +277,10 @@ class Books
     public function insertPostMeta($post_id, $isbn)
     {
 
+        if(!$this->validate_isbn($isbn)){
+            set_transient('ISBN_NOTICE',1, 15);
+            return;
+        }
 
         $sql_query = $this->db->prepare(
             'INSERT INTO ' .
@@ -281,6 +295,11 @@ class Books
     public function updatePostMeta($post_id, $isbn )
     {
 
+        if(!$this->validate_isbn($isbn)){
+            set_transient('ISBN_NOTICE',1, 15);
+            return;
+        }
+
         $sql_query = $this->db->prepare(
             'UPDATE  `' .
             $this->db->base_prefix . $this->table_name .
@@ -290,6 +309,35 @@ class Books
         );
 
         $this->db->query($sql_query);
+    }
+
+    public function validate_isbn($isbn) {
+        // حذف هر کاراکتر غیر عددی
+        $isbn = preg_replace('/\D/', '', $isbn);
+
+        // بررسی برای ISBN 10
+        if (strlen($isbn) == 10) {
+            $sum = 0;
+            for ($i = 0; $i < 9; $i++) {
+                $sum += (10 - $i) * (int)$isbn[$i];
+            }
+            $checksum = $isbn[9] == 'X' ? 10 : (int)$isbn[9];
+            $sum += $checksum;
+
+            return $sum % 11 == 0;
+        }
+
+        // بررسی برای ISBN 13
+        if (strlen($isbn) == 13) {
+            $sum = 0;
+            for ($i = 0; $i < 12; $i++) {
+                $sum += (intval($isbn[$i]) * ($i % 2 == 0 ? 1 : 3));
+            }
+            $checksum = 10 - ($sum % 10);
+            return $checksum == (int)$isbn[12];
+        }
+
+        return false; // اگر طول ISBN صحیح نبود
     }
 
     function registerTaxonomies() {
