@@ -28,11 +28,11 @@ class MenuPage
 
         $this->config = $config;
         $this->data_table = $data_table;
-        add_action('admin_menu', [$this, 'addHelloWorldMenu']);
+        add_action('admin_menu', [$this, 'addBooksMenu']);
     }
 
 
-    public function addHelloWorldMenu()
+    public function addBooksMenu()
     {
         add_menu_page(
             $this->config['page_title'],            // Page title
