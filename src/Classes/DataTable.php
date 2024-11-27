@@ -33,10 +33,9 @@ class DataTable extends \WP_List_Table
     {
         $columns = array(
 
-            'post_id'=> 'ID',
-            'post_title'=>'Title',
-            'isbn'=>'ISBN',
-
+            'post_id'=> __('ID', VB_TEXT_DOMAIN),
+            'post_title'=>__('Title', VB_TEXT_DOMAIN),
+            'isbn'=>__('ISBN', VB_TEXT_DOMAIN),
 
         );
 
@@ -46,14 +45,14 @@ class DataTable extends \WP_List_Table
     function prepare_items()
     {
         $columns = $this->get_columns();
-        $sortable = $this->get_sortable_columns();
+
         /*
          * Get data from database table
          */
         $this->table_data = $this->get_table_data();
         $hidden = array();
 
-        $this->_column_headers = array($columns, $hidden, $sortable);
+        $this->_column_headers = array($columns, $hidden, null);
 
         $this->items = $this->table_data;
 
@@ -88,13 +87,6 @@ class DataTable extends \WP_List_Table
 
         return $item[$column_name];
 
-    }
-
-    public function get_sortable_columns() {
-        return [
-            'ID'   => ['ID', false],
-            'isbn' => ['isbn', false],
-        ];
     }
 
 }
