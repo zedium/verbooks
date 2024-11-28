@@ -6,7 +6,7 @@
  * Description:     This is an assessment
  * Author:          Ayub Zeitunli
  * Author URI:      https://github.com/zedium
- * Text Domain:     zedium-bookinfo
+ * Text Domain:     verbooks-text-domain
  * Domain Path:     /languages
  * Version:         0.1.0
  */
@@ -23,7 +23,7 @@ use League\Container\Container;
 use VerBooks\Classes\MenuPage;
 use VerBooks\Services;
 
-
+define('VB_TEXT_DOMAIN', 'verbooks-text-domain');
 if (file_exists(dirname(__FILE__) . '/vendor/autoload.php')) {
     require dirname(__FILE__) . '/vendor/autoload.php';
 }
@@ -85,10 +85,6 @@ class VerBooksInit extends Singleton
             $this->application->boot(function (Plugin $plugin) {
                 $plugin->loadPluginTextDomain();
 
-                // load template
-                $this->application->template('plugin-template.php', ['foo' => 'bar']);
-
-
 
                 ///...
 
@@ -121,6 +117,15 @@ class VerBooksInit extends Singleton
         return $this->application;
     }
 }
+
+function my_plugin_load_textdomain() {
+
+    $file = plugin_dir_path(__FILE__) . 'languages/fa.mo';
+
+    load_textdomain(VB_TEXT_DOMAIN,  $file);
+
+}
+add_action('plugins_loaded', 'my_plugin_load_textdomain');
 
 /**
  * Returns the main instance of VerBooksInit.
