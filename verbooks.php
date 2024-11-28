@@ -83,8 +83,10 @@ class VerBooksInit extends Singleton
             });
 
             $this->application->boot(function (Plugin $plugin) {
-                $plugin->loadPluginTextDomain();
 
+                $path = plugin_basename(dirname(__FILE__)) . '/languages';
+
+                load_plugin_textdomain(VB_TEXT_DOMAIN, false, $path);
 
                 ///...
 
@@ -118,14 +120,6 @@ class VerBooksInit extends Singleton
     }
 }
 
-function my_plugin_load_textdomain() {
-
-    $file = plugin_dir_path(__FILE__) . 'languages/fa.mo';
-
-    load_textdomain(VB_TEXT_DOMAIN,  $file);
-
-}
-add_action('plugins_loaded', 'my_plugin_load_textdomain');
 
 /**
  * Returns the main instance of VerBooksInit.
