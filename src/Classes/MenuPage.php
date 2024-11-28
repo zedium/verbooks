@@ -35,8 +35,8 @@ class MenuPage
     public function addBooksMenu()
     {
         add_menu_page(
-            $this->config['page_title'],            // Page title
-            $this->config['menu_title'],            // Menu title
+            __($this->config['page_title'], VB_TEXT_DOMAIN),            // Page title
+            __($this->config['menu_title'], VB_TEXT_DOMAIN),          // Menu title
             'manage_options',         // Capability
             $this->config['menu_slug'],            // Menu slug
             [$this, 'renderHelloWorldPage'], // Callback
